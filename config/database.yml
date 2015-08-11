@@ -25,13 +25,12 @@ test:
   port: <%= ENV['DATABASE_PORT'] || "" %>
 
 production:
-  adapter: <%= ENV['DATABASE_ADAPTER'].presence || "mysql2" %>
+  adapter: <%= ENV['DB_TYPE'].presence || "mysql2" %>
   encoding: <%= ENV['DATABASE_ENCODING'].presence || "utf8" %>
   reconnect: <%= ENV['DATABASE_RECONNECT'].presence || "true" %>
-  database: <%= ENV['DATABASE_NAME'].presence || "huginn_production" %>
+  database: <%= ENV['DB_NAME'].presence || "huginn_production" %>
   pool: <%= ENV['DATABASE_POOL'].presence || "10" %>
-  username: <%= ENV['DATABASE_USERNAME'].presence || "root" %>
-  password: <%= ENV['DATABASE_PASSWORD'].presence || "password" %>
-  host: <%= ENV['DATABASE_HOST'] || "" %>
-  port: <%= ENV['DATABASE_PORT'] || "" %>
-  socket: <%= ENV['DATABASE_SOCKET'] || ["/var/run/mysqld/mysqld.sock", "/opt/local/var/run/mysql5/mysqld.sock", "/tmp/mysql.sock"].find{ |path| File.exist? path } %>
+  username: <%= ENV['DB_USER'].presence || "root" %>
+  password: <%= ENV['DB_PASS'].presence || "password" %>
+  host: <%= ENV['DB_HOST'] || "" %>
+  port: <%= ENV['DB_PORT'] || "" %>
