@@ -121,6 +121,10 @@ end
 
 group :production do
   gem 'rack', '> 1.5.0'
+  gem 'pg'
+  gem 'unicorn'
+  gem 'puma'
+  gem 'rails_12factor', group: :production
 end
 
 # Platform requirements.
@@ -128,25 +132,3 @@ gem 'ffi', '>= 1.9.4'		# required by typhoeus; 1.9.4 has fixes for *BSD.
 gem 'tzinfo', '>= 1.2.0'	# required by rails; 1.2.0 has support for *BSD and Solaris.
 # Windows does not have zoneinfo files, so bundle the tzinfo-data gem.
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
-
-# Introduces a scope for Heroku specific gems.
-def on_heroku
-  if ENV['ON_HEROKU'] ||
-     ENV['HEROKU_POSTGRESQL_ROSE_URL'] ||
-     ENV['HEROKU_POSTGRESQL_GOLD_URL'] ||
-     File.read(File.join(File.dirname(__FILE__), 'Procfile')) =~ /intended for Heroku/
-    yield
-  else
-    # When not on Heroku, we still want our Gemfile.lock to include
-    # Heroku specific gems, so we scope them to an unsupported
-    # platform.
-    platform :ruby_18, &proc
-  end
-end
-
-on_heroku do
-  gem 'pg'
-  gem 'unicorn'
-  gem 'puma'
-  gem 'rails_12factor', group: :production
-end
