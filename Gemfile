@@ -94,6 +94,11 @@ gem 'therubyracer', '~> 0.12.2'
 gem 'typhoeus', '~> 0.6.3'
 gem 'uglifier', '>= 1.3.0'
 
+gem 'rack', '> 1.5.0'
+gem 'pg'
+gem 'puma'
+gem 'rails_12factor', group: :production
+
 group :development do
   gem 'better_errors', '~> 1.1'
   gem 'binding_of_caller'
@@ -117,14 +122,6 @@ group :development do
     gem 'vcr'
     gem 'webmock', '~> 1.17.4', require: false
   end
-end
-
-group :production do
-  gem 'rack', '> 1.5.0'
-  gem 'pg'
-  gem 'unicorn'
-  gem 'puma'
-  gem 'rails_12factor', group: :production
 end
 
 # Platform requirements.
