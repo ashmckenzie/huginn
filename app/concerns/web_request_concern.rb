@@ -44,7 +44,7 @@ module WebRequestConcern
             encoding = @default_encoding
           else
             # Never try to transcode a binary content
-            return
+            next
           end
         end
         body.encode!(Encoding::UTF_8, encoding) unless body.encoding == Encoding::UTF_8
@@ -119,6 +119,13 @@ module WebRequestConcern
 
       if userinfo = basic_auth_credentials
         builder.request :basic_auth, *userinfo
+      end
+
+      builder.use FaradayMiddleware::Gzip
+
+      unless builder.headers.any? { |key,| /\Aaccept[-_]encoding\z/i =~ key }
+        # Exclude `deflate` by default.  See #1018.
+        builder.headers[:accept_encoding] = 'gzip,identity'
       end
 
       case backend = faraday_backend

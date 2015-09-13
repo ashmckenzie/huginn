@@ -29,7 +29,7 @@ gem 'twitter-stream', github: 'cantino/twitter-stream', branch: 'huginn'
 gem 'omniauth-twitter'
 
 # Tumblr Agents
-gem 'tumblr_client'
+gem 'tumblr_client', github: 'knu/tumblr_client', branch: 'patch-1'
 gem 'omniauth-tumblr'
 
 # Dropbox Agents
@@ -41,7 +41,6 @@ gem 'haversine'
 
 # Optional Services.
 gem 'omniauth-37signals'          # BasecampAgent
-# gem 'omniauth-github'
 gem 'omniauth-wunderlist', github: 'wunderlist/omniauth-wunderlist', ref: 'd0910d0396107b9302aa1bc50e74bb140990ccb8'
 
 # Bundler <1.5 does not recognize :x64_mingw as a valid platform name.
@@ -64,7 +63,7 @@ gem 'devise', '~> 3.4.0'
 gem 'dotenv-rails', '~> 2.0.1'
 gem 'em-http-request', '~> 1.1.2'
 gem 'faraday', '~> 0.9.0'
-gem 'faraday_middleware'
+gem 'faraday_middleware', '>= 0.10.0'
 gem 'feed-normalizer'
 gem 'font-awesome-sass', '~> 4.3.2'
 gem 'foreman', '~> 0.63.0'
@@ -84,7 +83,7 @@ gem 'mysql2', '~> 0.3.16'
 gem 'multi_xml'
 gem 'nokogiri', '~> 1.6.4'
 gem 'omniauth'
-gem 'rails' , '4.2.2'
+gem 'rails', '4.2.4'
 gem 'rufus-scheduler', '~> 3.0.8', require: false
 gem 'sass-rails',   '~> 5.0.3'
 gem 'select2-rails', '~> 3.5.4'
@@ -127,11 +126,6 @@ group :development do
   end
 end
 
-group :production do
-  gem 'rack', '> 1.5.0'
-  gem 'unicorn', '~> 4.9.0'
-end
-
 # Platform requirements.
 gem 'ffi', '>= 1.9.4'		# required by typhoeus; 1.9.4 has fixes for *BSD.
 gem 'tzinfo', '>= 1.2.0'	# required by rails; 1.2.0 has support for *BSD and Solaris.
@@ -151,9 +145,4 @@ def on_heroku
     # platform.
     platform :ruby_18, &proc
   end
-end
-
-on_heroku do
-  gem 'pg'
-  gem 'rails_12factor', group: :production
 end
