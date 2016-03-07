@@ -12,6 +12,17 @@ GemfileHelper.load_dotenv do |dotenv_dir|
   end
 end
 
+# Introduces a scope for gem loading based on a condition
+def if_true(condition)
+  if condition
+    yield
+  else
+    # When not including the gems, we still want our Gemfile.lock
+    # to include them, so we scope them to an unsupported platform.
+    platform :ruby_18, &proc
+  end
+end
+
 # Optional libraries.  To conserve RAM, comment out any that you don't need,
 # then run `bundle` and commit the updated Gemfile and Gemfile.lock.
 gem 'twilio-ruby', '~> 3.11.5'    # TwilioAgent
@@ -94,7 +105,7 @@ gem 'mini_magick'
 gem 'multi_xml'
 gem 'nokogiri', '1.6.7.2'
 gem 'omniauth'
-gem 'rails', '4.2.5.1'
+gem 'rails', '4.2.5.2'
 gem 'rufus-scheduler', '~> 3.0.8', require: false
 gem 'sass-rails',   '~> 5.0.3'
 gem 'select2-rails', '~> 3.5.4'
@@ -105,7 +116,7 @@ gem 'typhoeus', '~> 0.6.3'
 gem 'uglifier', '~> 2.7.2'
 
 gem 'rack', '> 1.5.0'
-gem 'pg'
+gem 'pg', '~> 0.18.3'
 gem 'puma'
 gem 'rails_12factor', group: :production
 
@@ -113,18 +124,26 @@ group :development do
   gem 'better_errors', '~> 1.1'
   gem 'binding_of_caller'
   gem 'quiet_assets'
-  gem 'guard'
-  gem 'guard-livereload', '~> 2.2'
-  gem 'guard-rspec'
+  gem 'guard', '~> 2.13.0'
+  gem 'guard-livereload', '~> 2.5.1'
+  gem 'guard-rspec', '~> 4.6.4'
+  gem 'rack-livereload', '~> 0.3.16'
   gem 'letter_opener_web'
 
   gem 'capistrano', '~> 3.4.0'
   gem 'capistrano-rails', '~> 1.1'
   gem 'capistrano-bundler', '~> 1.1.4'
 
+  if_true(ENV['SPRING']) do
+    gem 'spring-commands-rspec', '~> 1.0.4'
+    gem 'spring', '~> 1.6.3'
+  end
+
   group :test do
     gem 'coveralls', require: false
     gem 'delorean'
+    gem 'poltergeist'
+    gem 'capybara-select2', require: false
     gem 'pry-rails'
     gem 'rr'
     gem 'rspec', '~> 3.2'
@@ -143,17 +162,26 @@ gem 'tzinfo', '>= 1.2.0'	# required by rails; 1.2.0 has support for *BSD and Sol
 # Windows does not have zoneinfo files, so bundle the tzinfo-data gem.
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
 
-# Introduces a scope for Heroku specific gems.
-def on_heroku
-  if ENV['ON_HEROKU'] ||
-     ENV['HEROKU_POSTGRESQL_ROSE_URL'] ||
-     ENV['HEROKU_POSTGRESQL_GOLD_URL'] ||
-     File.read(File.join(File.dirname(__FILE__), 'Procfile')) =~ /intended for Heroku/
-    yield
+on_heroku = ENV['ON_HEROKU'] ||
+            ENV['HEROKU_POSTGRESQL_ROSE_URL'] ||
+            ENV['HEROKU_POSTGRESQL_GOLD_URL'] ||
+            File.read(File.join(File.dirname(__FILE__), 'Procfile')) =~ /intended for Heroku/
+
+ENV['DATABASE_ADAPTER'] ||=
+  if on_heroku
+    'postgresql'
   else
-    # When not on Heroku, we still want our Gemfile.lock to include
-    # Heroku specific gems, so we scope them to an unsupported
-    # platform.
-    platform :ruby_18, &proc
+    'mysql2'
   end
+
+if_true(on_heroku) do
+  gem 'rails_12factor', group: :production
+end
+
+if_true(ENV['DATABASE_ADAPTER'].strip == 'postgresql') do
+  gem 'pg', '~> 0.18.3'
+end
+
+if_true(ENV['DATABASE_ADAPTER'].strip == 'mysql2') do
+  gem 'mysql2', '~> 0.3.20'
 end
